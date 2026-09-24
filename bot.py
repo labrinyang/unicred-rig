@@ -1101,7 +1101,7 @@ def model_selftest(a):
     return bad == 0 and ok > 0
 
 
-def main():
+def argument_parser():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--backend", action="append", default=[], help='engine command, repeatable: "./miner_cpu" or "ssh -p PORT root@HOST"')
     ap.add_argument("--dry-run", action="store_true", help="never send; verify hits with digestOf() and eth_call mine() instead")
@@ -1132,6 +1132,11 @@ def main():
                          "moment block B-1 could be seen, instead of after actually seeing it. Depends on your latency: "
                          "calibrate it (see README) before relying on it")
     ap.add_argument("--presend-test", action="store_true", help="(dry run) fake a proof each race to test early-send timing")
+    return ap
+
+
+def main():
+    ap = argument_parser()
     a = ap.parse_args()
     if a.model_test:
         sys.exit(0 if model_selftest(a) else 1)

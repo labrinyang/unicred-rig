@@ -1,54 +1,43 @@
 # unicred-rig
 
-A GPU miner for [UNICRED](https://unicred.fun) on Unichain, with CUDA and Apple Metal backends, CPU fallback, and a Python controller for proof validation and transaction submission.
+A GPU miner for [UNICRED](https://unicred.fun) on Unichain, supporting NVIDIA CUDA and Apple Metal.
 
-## Setup
+## Quick start
 
-```sh
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-mkdir -p ~/.unicred
-chmod 700 ~/.unicred
-```
+Requires Git, Python 3.10+, and either:
 
-Store the wallet private key in `~/.unicred/hot.key` and its address in `~/.unicred/hot.addr`, then run `chmod 600 ~/.unicred/hot.key`. Live mining requires funds on Unichain for minting and gas.
-
-## Run locally
-
-Build for your GPU:
-
-NVIDIA (CUDA Toolkit):
+- **Apple silicon:** macOS 11+ and Xcode Command Line Tools (`xcode-select --install`).
+- **NVIDIA on Linux:** an NVIDIA driver and the CUDA Toolkit (`nvcc` available).
 
 ```sh
-nvcc -O3 -std=c++17 -arch=native -o miner miner.cu -lpthread
+git clone https://github.com/labrinyang/unicred-rig.git && cd unicred-rig && ./run.sh
 ```
 
-Apple silicon (macOS 11+ and Xcode Command Line Tools):
+The launcher installs Python dependencies, detects your GPU, builds the miner, and guides wallet setup. Later runs reuse the setup: `./run.sh`.
+
+## Wallet setup
+
+1. Choose **Create a dedicated mining wallet**, or **Import a private key**. To import, export a dedicated account's private key from your wallet app and paste it into the hidden prompt. The address is derived automatically; recovery phrases are not accepted.
+2. Send ETH to the displayed address on **Unichain mainnet (chain ID 130)** for minting and gas. See [wallet and network setup](https://developers.uniswap.org/docs/unichain/getting-started/setting-up-a-wallet).
+3. Press Enter to start live mining. Stop with Ctrl-C.
+
+The private key stays in `~/.unicred/hot.key`, readable only by your user. Back up this file securely; it controls the wallet. Existing wallets are reused.
+
+## Other modes
 
 ```sh
-clang++ -O3 -std=c++17 -fobjc-arc -mmacosx-version-min=11.0 -framework Foundation -framework Metal -o miner miner_metal.mm
+./run.sh --dry-run  # validate without sending transactions; only an address is needed
+./run.sh --test     # offline GPU/protocol checks; no wallet needed
+./run.sh --setup    # configure the wallet without mining
 ```
 
-Then run:
+Pass bot options directly, e.g. `./run.sh --max-wins 5`. See `./run.sh --help`. `DRY=1` and `BOT_ARGS` remain supported.
 
-```sh
-DRY=1 ./run.sh ./miner  # validate without sending transactions
-./run.sh ./miner        # live mining
-```
-
-Set `BOT_ARGS` for additional options; see `.venv/bin/python bot.py --help`.
-For offline checks without a wallet, run `.venv/bin/python test_engine.py --engine ./miner`.
-
-### SSH (optional)
-
-To use a remote NVIDIA GPU host, replace `GPU_HOST` below:
+For a remote NVIDIA GPU (optional), replace `GPU_HOST`:
 
 ```sh
 ./deploy.sh "ssh root@GPU_HOST"
-DRY=1 ./run.sh "ssh root@GPU_HOST"  # validate without sending transactions
-./run.sh "ssh root@GPU_HOST"        # live mining
+./run.sh "ssh root@GPU_HOST"
 ```
-
-Pass multiple SSH commands to use multiple hosts.
 
 Unofficial project; not affiliated with UNICRED.

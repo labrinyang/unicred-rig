@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
-# Start the bot against one or more GPU boxes (already set up with ./deploy.sh).
-#   ./run.sh "ssh -p 41234 root@ssh4.vast.ai" ["ssh -p 22 root@1.2.3.4" ...]        live (needs a funded hot wallet)
-#   DRY=1 ./run.sh "ssh -p 41234 root@ssh4.vast.ai"                                    dry run: nothing is sent
+# Set up and run locally, or pass explicit backend commands for SSH/custom engines.
+set -euo pipefail
 cd "$(dirname "$0")"
-args=()
-for b in "$@"; do args+=(--backend "$b"); done
-[ ${#args[@]} -gt 0 ] || { echo "usage: $0 \"ssh -p PORT root@HOST\" [...]"; exit 2; }
-[ -n "${DRY:-}" ] && args+=(--dry-run --verify-hits)
-exec .venv/bin/python bot.py "${args[@]}" ${BOT_ARGS:-}
+command -v python3 >/dev/null 2>&1 || { echo "Install Python 3.10 or newer, then run ./run.sh again." >&2; exit 1; }
+exec python3 launch.py "$@"

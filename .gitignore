@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.log
+logs/
+# build outputs
+miner
+miner_cpu
+miner.new
+test_core
+# never commit keys
+*.key
+*.addr
+.env
+.DS_Store

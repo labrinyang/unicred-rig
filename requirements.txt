@@ -1,0 +1,6 @@
+eth-account>=0.13
+eth-abi>=5
+pycryptodome>=3.20
+# optional, only for --flash
+websocket-client>=1.8
+brotli>=1.1

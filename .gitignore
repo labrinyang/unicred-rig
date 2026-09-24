@@ -5,6 +5,7 @@ logs/
 # build outputs
 miner
 miner_cpu
+miner_metal
 miner.new
 test_core
 # never commit keys

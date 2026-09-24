@@ -25,7 +25,9 @@
 #include <thread>
 #include <vector>
 
-#ifdef __CUDACC__
+#if defined(UNICRED_METAL)
+#define ENGINE_GPU 1
+#elif defined(__CUDACC__)
 #include <cuda_runtime.h>
 #define ENGINE_GPU 1
 #else
@@ -90,7 +92,9 @@ static uint64_t seed_mix(uint64_t salt) {
   return s;
 }
 
-#if ENGINE_GPU
+#if defined(UNICRED_METAL)
+#include "metal_backend.h"
+#elif ENGINE_GPU
 // ------------------------------------------------------------------ GPU
 struct KParams {
   uint64_t base[25];
